@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import LeftDrawer from '../components/Drawer'
 import { UilArchway } from '@iconscout/react-unicons'
 
+import WarehouseTable from "../components/warehouse/WarehouseTable"
 const Warehouse = () => {
 
   const [title, setTitle] = useState("Warehouse");
@@ -18,6 +19,10 @@ const Warehouse = () => {
         titleIcon={titleIcon}
         setTitleIcon={setTitleIcon}
       />
+
+      <div style={{marginLeft: "15%", width: "80%", marginTop: "5%"}}>
+        <WarehouseTable />
+      </div>
     </>
   )
 }

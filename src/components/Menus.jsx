@@ -1,8 +1,14 @@
-import { UilSitemap } from "@iconscout/react-unicons";
 import { UilSignout } from '@iconscout/react-unicons'
 import { UilArchway } from '@iconscout/react-unicons'
 
 export const menus = [
+  {
+    id: 1,
+    name: "Analysis",
+    link: "/dashboard",
+    icon: <UilArchway />,
+    description: "list of all available suppliers",
+  },
   {
     id: 1,
     name: "Warehouse",
