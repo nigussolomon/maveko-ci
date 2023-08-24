@@ -16,6 +16,13 @@ export const menus = [
     icon: <UilArchway />,
     description: "list of all available suppliers",
   },
+  {
+    id: 1,
+    name: "Items",
+    link: "/items",
+    icon: <UilArchway />,
+    description: "Items inside the customers warehouse",
+  },
 ];
 
 export const subMenus = [

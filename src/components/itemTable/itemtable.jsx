@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import {
   Box,
@@ -16,19 +16,25 @@ import {
 import { Delete, Edit } from '@mui/icons-material';
 
 import DisplayItem from '../dialog/DisplayItem';
+import axios from 'axios';
 
-const Example = () => {
+const ItemTable = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [tableData, setTableData] = useState([
-    // Sample data for testing purposes
-    {
-      warehouseId: 1,
-      warehouseName: 'Wh001',
-      warehouseAddress: '1500 NE Miami Pl Apt 202, Miami, FL 33132',
-      warehouseCapacity: '456789',
-    },
-  ]);
+  const [tableData, setTableData] = useState([]);
   const [validationErrors, setValidationErrors] = useState({});
+
+  useEffect(() => {
+    fetchTableData();
+  }, []);
+
+  const fetchTableData = async () => {
+    try {
+      const response = await axios.get("https://64e6f3e4b0fd9648b78f16ce.mockapi.io/cusitemtable"); 
+      setTableData(response.data);
+    } catch (error) {
+      console.error('Error fetching table data:', error);
+    }
+  };
 
 
   const handleCreateNewRow = (values) => {
@@ -94,39 +100,31 @@ const Example = () => {
 
   const columns = useMemo(
     () => [
+      
       {
-        accessorKey: 'warehouseId',
-        header: 'Warehouse ID',
+        accessorKey: "item_name",
+        header: "ITEM NAME",
         enableColumnOrdering: false,
         enableEditing: false, //disable editing on this column
         enableSorting: false,
         size: 80,
       },
       {
-        accessorKey: 'warehouseName',
-        header: 'Warehouse Name',
+        accessorKey: "item_description",
+        header: "ITEM DESCRIPTION",
         size: 140,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
       },
       {
-        accessorKey: 'warehouseAddress',
-        header: 'Warehouse Address',
+        accessorKey: "item_quantity",
+        header: "ITEM QUANTITY",
         size: 140,
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
       },
-      {
-        accessorKey: 'warehouseCapacity',
-        header: 'Warehouse Capacity',
-        muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-          ...getCommonEditTextFieldProps(cell),
-          type: 'email',
-        }),
-      },
-      
       {
         id: "actions",
         header: "Actions",
@@ -154,63 +152,45 @@ const Example = () => {
         align: "center",
       },
     ],
-
-    [getCommonEditTextFieldProps],
+    [getCommonEditTextFieldProps]
   );
-
+  
   return (
     <>
+    <div style={{
+        marginTop: "70px",
+        marginLeft: "250px",
+        padding: "20px",
+    }}>
       <MaterialReactTable
-        // displayColumnDefOptions={{
-        //   'mrt-row-actions': {
-        //     muiTableHeadCellProps: {
-        //       align: 'center',
-        //     },
-        //     size: 120,
-        //   },
-        // }}
         columns={columns}
         data={tableData}
         editingMode="modal" //default
         enableColumnOrdering
-        // enableEditing
         onEditingRowSave={handleSaveRowEdits}
         onEditingRowCancel={handleCancelRowEdits}
-        // renderRowActions={({ row, table }) => (
-        //   <Box sx={{ display: 'flex', gap: '1rem', marginLeft: "25%" }}>
-        //     <Tooltip arrow placement="left" title="Edit">
-        //       <IconButton onClick={() => table.setEditingRow(row)}>
-        //         <Edit />
-        //       </IconButton>
-        //     </Tooltip>
-        //     <Tooltip arrow placement="right" title="Delete">
-        //       <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-        //         <Delete />
-        //       </IconButton>
-        //     </Tooltip>
-        //   </Box>
-        // )}
         renderTopToolbarCustomActions={() => (
           <Button
             onClick={() => setCreateModalOpen(true)}
             variant="contained"
           >
-            Create New Account
+            Create New Item
           </Button>
         )}
       />
-      <CreateNewAccountModal
+      <CreateNewItemModal
         columns={columns}
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
       />
+      </div>
     </>
   );
 };
 
-//example of creating a mui dialog modal for creating new rows
-export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
+//ItemTable of creating a mui dialog modal for creating new rows
+export const CreateNewItemModal = ({ open, columns, onClose, onSubmit }) => {
   const [values, setValues] = useState(() =>
     columns.reduce((acc, column) => {
       acc[column.accessorKey ?? ''] = '';
@@ -226,7 +206,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
 
   return (
     <Dialog open={open}>
-      <DialogTitle textAlign="center">Create New Account</DialogTitle>
+      <DialogTitle textAlign="center">Create New Item</DialogTitle>
       <DialogContent>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
@@ -252,7 +232,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
       <DialogActions sx={{ p: '1.25rem' }}>
         <Button onClick={onClose}>Cancel</Button>
         <Button  onClick={handleSubmit} variant="contained">
-          Create New Account
+          Create New Item
         </Button>
       </DialogActions>
     </Dialog>
@@ -269,4 +249,4 @@ const validateEmail = (email) =>
     );
 const validateAge = (age) => age >= 18 && age <= 50;
 
-export default Example;
+export default ItemTable;
